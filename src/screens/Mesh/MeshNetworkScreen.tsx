@@ -16,12 +16,18 @@ export const MeshNetworkScreen = () => {
 
   const requestPermissions = async () => {
     if (Platform.OS === 'android') {
-      await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        // NEARBY_WIFI_DEVICES is Android 13+, so we might need to handle it gracefully
-        PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES || 'android.permission.NEARBY_WIFI_DEVICES'
-      ]);
+      try {
+        const perms = [
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        ];
+        if (Platform.Version >= 33) {
+          perms.push('android.permission.NEARBY_WIFI_DEVICES' as any);
+        }
+        await PermissionsAndroid.requestMultiple(perms);
+      } catch (err) {
+        console.error('Permission error:', err);
+      }
     }
   };
 

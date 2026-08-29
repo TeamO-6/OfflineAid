@@ -10,6 +10,11 @@
       "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDummyKeyForHackathonDemoDoNotUse1"
+        }
+      },
       "permissions": [
         "android.permission.ACCESS_WIFI_STATE",
         "android.permission.CHANGE_WIFI_STATE",
