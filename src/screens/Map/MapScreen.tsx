@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 
 import { RequestRepository } from '../../database/repositories/RequestRepository';
@@ -50,7 +50,13 @@ export const MapScreen = () => {
         style={styles.map}
         initialRegion={DEFAULT_REGION}
         showsUserLocation={true}
+        mapType="none"
       >
+        <UrlTile
+          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+          flipY={false}
+        />
         {requests.map((req, index) => {
           // Generate deterministic fake coordinates around default region for demo purposes
           // In a real app, this would use req.latitude and req.longitude
