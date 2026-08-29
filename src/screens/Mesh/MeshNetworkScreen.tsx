@@ -5,7 +5,8 @@ import { Smartphone, Network, DownloadCloud, Activity } from 'lucide-react-nativ
 import { colors, spacing, typography, borderRadius } from '../../config/theme';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-import { simulatedTransport } from '../../services/p2p/SimulatedPeerTransport';
+import { PermissionsAndroid, Platform } from 'react-native';
+import { wifiDirectTransport } from '../../services/p2p/WifiDirectTransport';
 import { syncManager } from '../../services/sync/SyncManager';
 
 export const MeshNetworkScreen = () => {
@@ -13,26 +14,37 @@ export const MeshNetworkScreen = () => {
   const [availablePeers, setAvailablePeers] = useState<string[]>([]);
   const [connectedPeers, setConnectedPeers] = useState<string[]>([]);
 
+  const requestPermissions = async () => {
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        // NEARBY_WIFI_DEVICES is Android 13+, so we might need to handle it gracefully
+        PermissionsAndroid.PERMISSIONS.NEARBY_WIFI_DEVICES || 'android.permission.NEARBY_WIFI_DEVICES'
+      ]);
+    }
+  };
+
   const handleScan = async () => {
+    await requestPermissions();
     setIsScanning(true);
-    const peers = await simulatedTransport.scanForPeers();
+    const peers = await wifiDirectTransport.scanForPeers();
     setAvailablePeers(peers);
     setIsScanning(false);
   };
 
   const handleConnect = async (peerId: string) => {
-    const success = await simulatedTransport.connect(peerId);
+    const success = await wifiDirectTransport.connect(peerId);
     if (success) {
       setAvailablePeers(prev => prev.filter(p => p !== peerId));
       setConnectedPeers(prev => [...prev, peerId]);
-      // In simulation, sync is automatically triggered by SyncManager on connect
     } else {
-      Alert.alert('Connection Failed');
+      Alert.alert('Connection Failed', 'Could not establish Wi-Fi Direct connection.');
     }
   };
 
   const handleDisconnect = async (peerId: string) => {
-    await simulatedTransport.disconnect(peerId);
+    await wifiDirectTransport.disconnect(peerId);
     setConnectedPeers(prev => prev.filter(p => p !== peerId));
     setAvailablePeers(prev => [...prev, peerId]);
   };
@@ -129,13 +141,8 @@ export const MeshNetworkScreen = () => {
 
       {/* Demo Tools */}
       <View style={styles.demoSection}>
-        <Text style={styles.demoTitle}>Demo Controls</Text>
-        <Text style={styles.demoDesc}>Use these tools during the hackathon pitch to simulate complex network events without multiple physical devices.</Text>
-        <Button 
-          title="Simulate Conflict"
-          variant="outline"
-          onPress={() => Alert.alert('Demo Mode', 'Conflict simulation triggered.')}
-        />
+        <Text style={styles.demoTitle}>Live P2P Mode</Text>
+        <Text style={styles.demoDesc}>Wi-Fi Direct handles device-to-device connections. Ensure both devices have Wi-Fi turned on and are disconnected from any hotspot.</Text>
       </View>
     </ScrollView>
   );

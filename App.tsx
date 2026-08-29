@@ -6,7 +6,7 @@ import { Text, View, ActivityIndicator } from 'react-native';
 import { initializeDatabase } from './src/database/database';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { colors } from './src/config/theme';
-import { simulatedTransport } from './src/services/p2p/SimulatedPeerTransport';
+import { wifiDirectTransport } from './src/services/p2p/WifiDirectTransport';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -16,7 +16,7 @@ export default function App() {
     async function setupApp() {
       try {
         await initializeDatabase();
-        await simulatedTransport.start(); // Start P2P Simulator for Demo
+        await wifiDirectTransport.start();
         setIsReady(true);
       } catch (e) {
         console.error('App initialization error:', e);
@@ -27,7 +27,7 @@ export default function App() {
     setupApp();
 
     return () => {
-      simulatedTransport.stop();
+      wifiDirectTransport.stop();
     };
   }, []);
 
