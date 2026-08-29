@@ -1,0 +1,15 @@
+Hello Antigravity AI!
+
+If you are reading this, you are assisting a team member on the OfflineAid project for the SIH 2026 hackathon. Please follow these strict project workflows:
+
+1. **Native Dependencies**: We are using native Android modules (like `react-native-wifi-p2p`). This means the code CANNOT run in standard Expo Go. Do not try to start `npx expo start` for testing.
+
+2. **Code Changes & Commits**: After you make any verified changes to the codebase, you MUST automatically stage, commit, and push the code to the repository. 
+Command: `git add . && git commit -m "Your descriptive message" && git push`
+
+3. **Automatic APK Builds**: Because we can't test in Expo Go, EVERY time you push a change, you MUST trigger a new EAS Android build so the team can test the APK on physical devices. 
+Command: `npx eas-cli build -p android --profile preview --non-interactive`
+
+4. **Communication**: After triggering the build, inform the user and provide the final Expo dashboard link or APK download link once the background build finishes.
+
+5. **Simulated vs Real Mesh**: We have fully integrated actual Wi-Fi Direct via `react-native-wifi-p2p`. Do not revert to the mock simulator unless explicitly asked.
