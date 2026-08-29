@@ -1,59 +1,55 @@
-# OfflineAid
+<div align="center">
+  <h1>🚨 OfflineAid</h1>
+  <p><strong>Disaster Relief Coordination Without Internet</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React Native" />
+    <img src="https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white" alt="Expo" />
+    <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  </p>
+</div>
 
-**Disaster Relief Coordination Without Internet**
+## 🌍 The Problem
 
-OfflineAid is a local-first, peer-to-peer disaster relief coordination application built for hackathons (like SIH 2026). During natural disasters, internet infrastructure is often compromised. OfflineAid allows relief workers and affected individuals to coordinate emergency requests and sync data seamlessly using mesh networking principles, even when completely offline.
+During natural disasters, internet infrastructure is often the first thing to fail. Relief workers and affected individuals are left completely disconnected, unable to coordinate emergency requests, distribute supplies, or report critical needs.
 
-## Core Features
+## 💡 The Solution
 
-- **Offline First**: All data is stored locally via SQLite (`expo-sqlite`). No internet connection is required to create or view requests.
-- **Emergency Requests**: Create critical requests for Medical aid, Water, Food, Shelter, and Rescue.
-- **Mesh Network Simulation**: Includes a full Demo Mode that simulates peer-to-peer data synchronization (`SimulatedPeerTransport`).
-- **Conflict Resolution**: Implements CRDT-inspired deterministic conflict resolution to merge requests when devices sync up.
-- **Map View**: View local and synchronized requests on a geographic map.
+**OfflineAid** is a local-first, peer-to-peer disaster relief coordination application. It empowers relief workers to create and manage emergency requests entirely offline, and uses **Mesh Networking** principles to synchronize data between devices when they come into close proximity.
 
-## Tech Stack
+### 🚀 Key Features
 
-- **Framework**: React Native with Expo (SDK 57)
+- **100% Offline Capability**: Built on an `expo-sqlite` foundation. Zero internet required to function.
+- **P2P Synchronization Engine**: Custom CRDT-inspired Conflict Resolver merges decentralized data flawlessly when devices connect.
+- **Emergency Triage**: Categorize requests by priority (Critical, High, Medium, Low) and type (Medical, Water, Food, Shelter).
+- **Geospatial Mapping**: Integrated `react-native-maps` to plot local and synchronized emergency requests geographically.
+
+## 🏗 Architecture
+
+Our system relies on a decentralized, eventually-consistent architecture:
+
+1. **Data Layer**: Local `SQLite` database persisting all states on the device.
+2. **Sync Layer**: A `SyncManager` that listens for peer connections and broadcasts deltas.
+3. **Resolution Layer**: Deterministic vector-clock style versioning ensuring that the most recent updates propagate correctly across the mesh.
+
+## 💻 Tech Stack
+
+- **Frontend**: React Native, Expo (SDK 57)
 - **Navigation**: React Navigation (Bottom Tabs & Native Stack)
 - **Database**: SQLite (Local persistence)
-- **Styling**: Custom Theme (`config/theme.ts`) with Lucide Icons
+- **Icons & UI**: Lucide React Native, Custom Design System
 
-## Running the Project
+## 🛠 Local Setup & Running
 
-Since this project targets Expo SDK 57, you can run it via Android Studio or EAS Build.
-
-### Local Android Build (Recommended)
-
-If you have Android Studio installed:
+To run the project locally via Expo and EAS:
 
 ```bash
+# Install dependencies
+npm install
+
+# Run the application locally (Android)
 npx expo run:android
 ```
-This will compile the native Android application and install it directly onto your connected device or emulator.
 
-### Using Expo Development Client
+## 🏆 Built for SIH 2026
 
-Start the dev server:
-
-```bash
-npx expo start
-```
-
-## Project Structure
-
-- `src/components/`: Reusable UI components (Buttons, Cards)
-- `src/config/`: App branding and theme configuration
-- `src/database/`: SQLite schema, initialization, and Repositories
-- `src/models/`: TypeScript interfaces and types
-- `src/navigation/`: AppNavigator defining tabs and screens
-- `src/screens/`: Feature screens (Dashboard, Map, Mesh Network, etc.)
-- `src/services/`: P2P Sync Manager and Conflict Resolver
-
-## Hackathon Demo Mode
-
-During a pitch, go to the **Mesh** tab to use the **Demo Controls**.
-This allows you to simulate scanning for nearby devices, connecting to peers, and manually forcing a synchronization event without needing multiple physical devices.
-
----
-*Built for SIH 2026.*
+This project was developed for the Smart India Hackathon 2026. It serves as a proof of concept for decentralized emergency response software that can save lives when traditional infrastructure fails.
