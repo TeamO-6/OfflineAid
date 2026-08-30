@@ -6,23 +6,23 @@ export class RequestRepository {
     const db = await getDb();
     await db.runAsync(
       `INSERT INTO requests (id, type, title, description, quantity, priority, latitude, longitude, status, originDeviceId, createdAt, updatedAt, version, syncStatus)
-       VALUES ($id, $type, $title, $description, $quantity, $priority, $latitude, $longitude, $status, $originDeviceId, $createdAt, $updatedAt, $version, $syncStatus)`,
-      {
-        $id: request.id,
-        $type: request.type,
-        $title: request.title,
-        $description: request.description || null,
-        $quantity: request.quantity || null,
-        $priority: request.priority,
-        $latitude: request.latitude || null,
-        $longitude: request.longitude || null,
-        $status: request.status,
-        $originDeviceId: request.originDeviceId,
-        $createdAt: request.createdAt,
-        $updatedAt: request.updatedAt,
-        $version: request.version,
-        $syncStatus: request.syncStatus
-      }
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        request.id,
+        request.type,
+        request.title,
+        request.description || null,
+        request.quantity || null,
+        request.priority,
+        request.latitude || null,
+        request.longitude || null,
+        request.status,
+        request.originDeviceId,
+        request.createdAt,
+        request.updatedAt,
+        request.version,
+        request.syncStatus
+      ]
     );
   }
 
@@ -40,31 +40,31 @@ export class RequestRepository {
     const db = await getDb();
     await db.runAsync(
       `UPDATE requests 
-       SET type = $type, title = $title, description = $description, quantity = $quantity, priority = $priority, 
-           latitude = $latitude, longitude = $longitude, status = $status, updatedAt = $updatedAt, version = $version, syncStatus = $syncStatus
-       WHERE id = $id`,
-      {
-        $type: request.type,
-        $title: request.title,
-        $description: request.description || null,
-        $quantity: request.quantity || null,
-        $priority: request.priority,
-        $latitude: request.latitude || null,
-        $longitude: request.longitude || null,
-        $status: request.status,
-        $updatedAt: request.updatedAt,
-        $version: request.version,
-        $syncStatus: request.syncStatus,
-        $id: request.id
-      }
+       SET type = ?, title = ?, description = ?, quantity = ?, priority = ?, 
+           latitude = ?, longitude = ?, status = ?, updatedAt = ?, version = ?, syncStatus = ?
+       WHERE id = ?`,
+      [
+        request.type,
+        request.title,
+        request.description || null,
+        request.quantity || null,
+        request.priority,
+        request.latitude || null,
+        request.longitude || null,
+        request.status,
+        request.updatedAt,
+        request.version,
+        request.syncStatus,
+        request.id
+      ]
     );
   }
 
   static async getPendingSync(): Promise<ReliefRequest[]> {
     const db = await getDb();
     return await db.getAllAsync<ReliefRequest>(
-      'SELECT * FROM requests WHERE syncStatus = $s1 OR syncStatus = $s2',
-      { $s1: 'PENDING', $s2: 'UPDATED' }
+      'SELECT * FROM requests WHERE syncStatus = ? OR syncStatus = ?',
+      ['PENDING', 'UPDATED']
     );
   }
 }

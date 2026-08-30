@@ -6,7 +6,8 @@ import { colors, spacing, typography, borderRadius } from '../../config/theme';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { PermissionsAndroid, Platform } from 'react-native';
-import { wifiDirectTransport } from '../../services/p2p/WifiDirectTransport';
+import { meshTransportManager } from '../../services/p2p/MeshTransportManager';
+import { Bluetooth } from 'lucide-react-native';
 import { syncManager } from '../../services/sync/SyncManager';
 
 export const MeshNetworkScreen = () => {
@@ -34,13 +35,13 @@ export const MeshNetworkScreen = () => {
   const handleScan = async () => {
     await requestPermissions();
     setIsScanning(true);
-    const peers = await wifiDirectTransport.scanForPeers();
+    const peers = await meshTransportManager.scanForPeers();
     setAvailablePeers(peers);
     setIsScanning(false);
   };
 
   const handleConnect = async (peerId: string) => {
-    const success = await wifiDirectTransport.connect(peerId);
+    const success = await meshTransportManager.connect(peerId);
     if (success) {
       setAvailablePeers(prev => prev.filter(p => p !== peerId));
       setConnectedPeers(prev => [...prev, peerId]);
@@ -50,7 +51,7 @@ export const MeshNetworkScreen = () => {
   };
 
   const handleDisconnect = async (peerId: string) => {
-    await wifiDirectTransport.disconnect(peerId);
+    await meshTransportManager.disconnect(peerId);
     setConnectedPeers(prev => prev.filter(p => p !== peerId));
     setAvailablePeers(prev => [...prev, peerId]);
   };
@@ -103,10 +104,10 @@ export const MeshNetworkScreen = () => {
         connectedPeers.map(peer => (
           <Card key={peer} style={styles.peerCard}>
             <View style={styles.peerInfo}>
-              <Smartphone size={24} color={colors.primary} />
+              {peer.startsWith('BT:') ? <Bluetooth size={24} color={colors.primary} /> : <Smartphone size={24} color={colors.primary} />}
               <View style={styles.peerDetails}>
-                <Text style={styles.peerName}>{peer}</Text>
-                <Text style={styles.peerStatus}>Connected • Ready to sync</Text>
+                <Text style={styles.peerName}>{peer.replace('BT:', '')}</Text>
+                <Text style={styles.peerStatus}>Connected via {peer.startsWith('BT:') ? 'Bluetooth' : 'Wi-Fi Direct'}</Text>
               </View>
             </View>
             <Button 
@@ -127,10 +128,10 @@ export const MeshNetworkScreen = () => {
           {availablePeers.map(peer => (
             <Card key={peer} style={styles.peerCard}>
               <View style={styles.peerInfo}>
-                <Smartphone size={24} color={colors.textSecondary} />
+                {peer.startsWith('BT:') ? <Bluetooth size={24} color={colors.textSecondary} /> : <Smartphone size={24} color={colors.textSecondary} />}
                 <View style={styles.peerDetails}>
-                  <Text style={styles.peerName}>{peer}</Text>
-                  <Text style={styles.peerStatus}>Tap to connect</Text>
+                  <Text style={styles.peerName}>{peer.replace('BT:', '')}</Text>
+                  <Text style={styles.peerStatus}>Tap to connect via {peer.startsWith('BT:') ? 'Bluetooth' : 'Wi-Fi Direct'}</Text>
                 </View>
               </View>
               <Button 

@@ -1,15 +1,15 @@
 import { RequestRepository } from '../../database/repositories/RequestRepository';
-import { wifiDirectTransport } from '../p2p/WifiDirectTransport';
 import { PeerMessage } from '../p2p/PeerTransport';
 import { ConflictResolver } from './ConflictResolver';
 import { ReliefRequest } from '../../models/Request';
+import { meshTransportManager } from '../p2p/MeshTransportManager';
 
 class SyncManager {
   private myDeviceId: string = 'Device-A'; // In reality, generated or fetched from storage
 
   constructor() {
-    wifiDirectTransport.onMessage(this.handleIncomingMessage.bind(this));
-    wifiDirectTransport.onPeerConnected(this.handlePeerConnected.bind(this));
+    meshTransportManager.onMessage(this.handleIncomingMessage.bind(this));
+    meshTransportManager.onPeerConnected(this.handlePeerConnected.bind(this));
   }
 
   public getMyDeviceId() {
@@ -30,7 +30,7 @@ class SyncManager {
       };
       
       try {
-        await wifiDirectTransport.sendMessage(peerId, message);
+        await meshTransportManager.sendMessage(peerId, message);
         
         // Optimistically mark as synced (in a real app, wait for ACK)
         for (const req of pendingRequests) {

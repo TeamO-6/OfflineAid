@@ -6,7 +6,7 @@ import { Text, View, ActivityIndicator } from 'react-native';
 import { initializeDatabase } from './src/database/database';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { colors } from './src/config/theme';
-import { wifiDirectTransport } from './src/services/p2p/WifiDirectTransport';
+import { meshTransportManager } from './src/services/p2p/MeshTransportManager';
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -16,7 +16,7 @@ export default function App() {
     async function setupApp() {
       try {
         await initializeDatabase();
-        await wifiDirectTransport.start();
+        await meshTransportManager.start();
         setIsReady(true);
       } catch (e) {
         console.error('App initialization error:', e);
@@ -27,7 +27,7 @@ export default function App() {
     setupApp();
 
     return () => {
-      wifiDirectTransport.stop();
+      meshTransportManager.stop();
     };
   }, []);
 

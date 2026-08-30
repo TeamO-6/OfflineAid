@@ -25,18 +25,22 @@ export const MapScreen = () => {
 
   useEffect(() => {
     const loadRequests = async () => {
-      const data = await RequestRepository.getAll();
-      const networkState = await Network.getNetworkStateAsync();
-      
-      if (!networkState.isConnected || !networkState.isInternetReachable) {
-        // In a true offline environment without pre-downloaded tiles, OpenStreetMap will be a black screen.
-        setIsOffline(true);
-      } else {
-        setIsOffline(false);
-      }
+      try {
+        const data = await RequestRepository.getAll();
+        const networkState = await Network.getNetworkStateAsync();
+        
+        if (!networkState.isConnected || !networkState.isInternetReachable) {
+          setIsOffline(true);
+        } else {
+          setIsOffline(false);
+        }
 
-      setRequests(data.filter(r => true));
-      setLoading(false);
+        setRequests(data.filter(r => true));
+      } catch (e) {
+        console.error('Error loading map requests:', e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     const unsubscribe = navigation.addListener('focus', () => {

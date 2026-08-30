@@ -20,7 +20,11 @@
         "android.permission.CHANGE_WIFI_STATE",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.NEARBY_WIFI_DEVICES"
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
