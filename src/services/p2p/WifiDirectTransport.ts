@@ -48,21 +48,26 @@ export class WifiDirectTransport implements PeerTransport {
 
       console.log('[Wi-Fi Direct] Transport started');
 
-      // Start long-polling for incoming messages (P2P library constraint)
-      this.pollInterval = setInterval(async () => {
-        try {
-          const rawMsg = await receiveMessage();
-          if (rawMsg) {
-            const msg: PeerMessage = JSON.parse(rawMsg);
-            this.messageCallbacks.forEach(cb => cb(msg));
-          }
-        } catch (e) {
-          // Ignore timeout or empty read errors
-        }
-      }, 2000);
+      // Start recursive non-blocking message loop
+      this.startMessageLoop();
 
     } catch (e) {
       console.error('[Wi-Fi Direct] Initialization failed:', e);
+    }
+  }
+
+  private async startMessageLoop() {
+    while (this.isRunning) {
+      try {
+        const rawMsg = await receiveMessage();
+        if (rawMsg) {
+          const msg: PeerMessage = JSON.parse(rawMsg);
+          this.messageCallbacks.forEach(cb => cb(msg));
+        }
+      } catch (e) {
+        // Ignore and wait before retrying to prevent hot loop
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
   }
 

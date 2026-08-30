@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
+import * as Network from 'expo-network';
+import { WifiOff, Map as MapIcon } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { RequestRepository } from '../../database/repositories/RequestRepository';
@@ -19,12 +21,21 @@ export const MapScreen = () => {
   const navigation = useNavigation<any>();
   const [requests, setRequests] = useState<ReliefRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     const loadRequests = async () => {
       const data = await RequestRepository.getAll();
-      // Filter requests that have coordinates (in a real app, use device location)
-      setRequests(data.filter(r => true)); // Currently mapping all, will randomize for demo
+      const networkState = await Network.getNetworkStateAsync();
+      
+      if (!networkState.isConnected || !networkState.isInternetReachable) {
+        // In a true offline environment without pre-downloaded tiles, OpenStreetMap will be a black screen.
+        setIsOffline(true);
+      } else {
+        setIsOffline(false);
+      }
+
+      setRequests(data.filter(r => true));
       setLoading(false);
     };
 
@@ -40,6 +51,24 @@ export const MapScreen = () => {
     return (
       <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (isOffline) {
+    return (
+      <View style={[styles.container, styles.center, { padding: 20 }]}>
+        <WifiOff size={64} color={colors.textSecondary} style={{ marginBottom: 20 }} />
+        <Text style={styles.offlineTitle}>Offline Mode</Text>
+        <Text style={styles.offlineDesc}>
+          Map tiles cannot be downloaded without an internet connection.
+        </Text>
+        <View style={styles.requestsFallback}>
+          <MapIcon size={24} color={colors.primary} />
+          <Text style={styles.fallbackText}>
+            {requests.length} Relief Requests are available offline via the List view.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -101,5 +130,29 @@ const styles = StyleSheet.create({
   center: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  offlineTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  offlineDesc: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  requestsFallback: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,102,204,0.1)',
+    padding: 16,
+    borderRadius: 8,
+  },
+  fallbackText: {
+    marginLeft: 12,
+    color: colors.primary,
+    fontWeight: '600',
   }
 });
